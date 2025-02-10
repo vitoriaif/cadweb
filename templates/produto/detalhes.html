@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block titulo_conteudo %} Detalhes do Produto {% endblock titulo_conteudo %}
+
+{% block conteudo %}
+
+<div class="card mb-3">
+    <div class="row g-0">
+        <div class="col-md-4">
+            <img src="{{ produto.img_base64 }}" style="width: 100%; height: auto;">
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <p class="card-text"><strong>ID:</strong> {{ produto.id }}</p>
+                <p class="card-text"><strong>Nome:</strong> {{ produto.nome}}</p>
+                <p class="card-text"><strong>Qtde em estoque:</strong> {{ produto.estoque.qtde }}</p>
+                <p class="card-text"><strong>Preço:</strong> R$ {{ produto.preco }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<a href="{% url 'produto' %}" class="btn btn-secondary btn-sm">Voltar</a>
+{% endblock conteudo %}

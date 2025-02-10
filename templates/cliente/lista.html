@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block titulo%} Clientes {% endblock %}
+
+{% block cards %} {% endblock %}
+
+{% block titulo_page %} Listagem de Clientes {% endblock %}
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% block conteudo%} 
+
+<button class="btn btn-primary"  onclick="location.href='{% url 'form_cliente' %}'">Novo Cliente</button>
+<button class="btn btn-secondary"  onclick="location.href='{% url 'cliente' %}'">Recarregar</button>
+
+<br>
+<br>
+
+<table class="table table-bordered table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Nome</th>
+            <th scope="col">CPF</th>
+            <th scope="col">Data de Nascimento</th>
+            <th scope="col">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cliente in lista %}
+        <tr>
+            <td> {{cliente.id}}</td>
+            <td> {{cliente.nome}}</td>
+            <td>{{cliente.cpf}}</td>
+            <td>{{cliente.datanasc|date:"d/m/Y"}}</td>
+            <td style="display: flex; gap: 5px;">
+                <!-- Novo Pedido primeiro -->
+                <button class="btn btn-primary" onclick="location.href='{% url 'novo_pedido' cliente.id %}'">Novo Pedido</button>
+                <button class="btn btn-info" onclick="location.href='{% url 'detalhes_cliente' cliente.id %}'">Detalhes</button>
+                <button class="btn btn-warning" onclick="location.href='{% url 'editar_cliente' cliente.id %}'">Alterar</button>
+                <form method="post" action="{% url 'excluir_cliente' cliente.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Excluir</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!confirm('Tem certeza que deseja excluir este cliente?')) {
+                event.preventDefault(); // Impede o envio do formulário
+            }
+        });
+    });
+</script>
+
+{% endblock %}

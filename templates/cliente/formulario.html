@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block titulo %} Novo Cliente {% endblock %}
+
+{% block cards %} {% endblock %}
+
+{% block titulo_page %} Novo Cliente {% endblock %}
+
+{% block conteudo %} 
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }} <!-- Renderiza cada campo do formulário com <p> tags -->
+    <button class="btn btn-primary" type="submit">Enviar</button>
+    <button class="btn btn-secondary" onclick="location.href='{% url 'cliente' %}'">Voltar</button>
+</form>
+
+{% endblock %}

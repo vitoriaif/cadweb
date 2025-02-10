@@ -83,9 +83,11 @@ body {
 }
 
 .barrabotoes {
-    margin-bottom: 0.5rem; /* Ajuste o valor conforme necessário */
-    padding: 5px;
+    display: flex;
+    gap: 10px;  /* Ajuste conforme necessário */
+    align-items: center; /* Garante que os botões fiquem alinhados */
 }
+
 
 h5{
     margin: 5px;

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+
+{% block titulo_conteudo %} Listagem de Pedidos {% endblock titulo_conteudo %}
+
+
+{% block conteudo %} 
+
+
+<div class="barrabotoes">
+    <a href="{% url 'cliente' %}" class="btn btn-primary">Lista Clientes</a>
+    <a href="{% url 'form_cliente' %}" class="btn btn-primary">Inserir Novo</a>
+    <button class="btn btn-secondary" onclick="window.location.reload();">Recarregar</button>
+</div>
+
+
+<table class="table table-hover">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Cliente</th>
+        <th>Data</th>
+        <th>Situação</th>
+        <th>Produtos</th>
+        <th>Total (R$)</th>
+        
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for pedido in lista %}
+      <tr>
+        <td>{{ pedido.id }}</td>
+        <td>{{ pedido.cliente.nome }}</td>
+        <td>{{ pedido.data_pedidof}}</td>
+        <td>{{ pedido.get_status_display }}</td>
+        <td>{{ pedido.qtdeItens}}</td>  
+        <td>{{ pedido.total}}</td>
+        <td>
+          <a href="{% url 'detalhes_pedido' pedido.id %}" class="btn btn-primary btn-sm">Detalhes</a>
+          <a href="{% url 'remover_pedido' pedido.id %}" class="btn btn-danger btn-sm" 
+              onclick="return confirm('Tem certeza que deseja remover este item?');">Remover</a>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+
+
+
+{% endblock conteudo %}
