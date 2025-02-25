@@ -23,24 +23,27 @@ urlpatterns = [
 
 ##PRODUTO
     path('produto/', views.produto, name="produto"),
+
     path('produto/form_produto/', views.form_produto, name="form_produto"),
     path('produto/detalhes/<int:id>/', views.detalhes_produto, name="detalhes_produto"),
     path('produto/estoque/<int:id>/', views.ajustar_estoque, name="ajustar_estoque"),
     path('editar_produto/<int:id>/', views.editar_produto, name="editar_produto"),
-    path('produto/excluir/<int:id>/', views.excluir_produto, name='excluir_produto'),
+    path('remover_produto/<int:id>', views.remover_produto, name='remover_produto'),
     path('ajustar_estoque/<int:id>', views.ajustar_estoque, name="ajustar_estoque"),
     
 
     ## PEDIDO 
-    
-    path('pedido/', views.pedido, name='pedido'),
-    path('novo_pedido/<int:id>/', views.novo_pedido, name='novo_pedido'),
-    path('remover_pedido/<int:id>/', views.remover_pedido, name='remover_pedido'),
-    path('detalhes_pedido/<int:id>/', views.detalhes_pedido, name='detalhes_pedido'),
-    path('detalhes_pedido/<int:id>/editar/', views.editar_item_pedido, name='editar_item_pedido'),
-    path('detalhes_pedido/<int:id>/remover_item/', views.remover_item_pedido, name='remover_item_pedido'),
-    path('form_pagamento/<int:id>/', views.form_pagamento, name='form_pagamento'),
+   path('buscar_dados/<str:app_modelo>/', views.buscar_dados, name='buscar_dados'),
+   path('pedido/', views.pedido, name='pedido'),
+    path('pedido/novo_pedido/<int:id>', views.novo_pedido, name='novo_pedido'),
+    path('pedido/detalhes/<int:id>/', views.detalhes_pedido, name='detalhes_pedido'),
+    path('editar_produto/<int:id>/', views.editar_produto, name='editar_produto'),
+    path('remover_pedido/<int:id>', views.remover_pedido, name='remover_pedido'),
+    path('remover_item_pedido/<int:id>/', views.remover_item_pedido, name='remover_item_pedido'),
+    path('editar_item_pedido/<int:id>/', views.editar_item_pedido, name='editar_item_pedido'),
     path('pagamento/editar/<int:id>/', views.editar_pagamento, name='editar_pagamento'),
-    path('pagamento/remover/<int:id>/', views.remover_pagamento, name='remover_pagamento'),
-    path('cliente/', views.cliente, name='cliente'),
+    path('form_pagamento/<int:id>/', views.form_pagamento, name='form_pagamento'),
+    path('remover_pagamento/<int:id>/', views.remover_pagamento, name='remover_pagamento'),
+    path('notafiscal/<int:id>/', views.nota_fiscal, name='notafiscal'),
+    
 ]

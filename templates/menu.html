@@ -30,4 +30,11 @@
             </li>
         </ul>
     </li>
+    {% if user.is_authenticated %}
+    <li class="nav-item">
+        <a href="{% url 'logout' %}" class="nav-link text-danger">
+            <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+        </a>
+    </li>
+    {% endif %}
 </ul>

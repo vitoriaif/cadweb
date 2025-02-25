@@ -38,6 +38,7 @@
         <td>{{ pedido.total}}</td>
         <td>
           <a href="{% url 'detalhes_pedido' pedido.id %}" class="btn btn-primary btn-sm">Detalhes</a>
+          <a href="{% url 'notafiscal' pedido.id %}" class="btn btn-info btn-sm">Nota Fiscal</a>
           <a href="{% url 'remover_pedido' pedido.id %}" class="btn btn-danger btn-sm" 
               onclick="return confirm('Tem certeza que deseja remover este item?');">Remover</a>
       </tr>

@@ -1,12 +1,26 @@
 {% extends "base.html" %}
 
+
 {% block titulo_conteudo %} Formulário de Produtos {% endblock titulo_conteudo %}
+
 
 {% block conteudo %} 
 <form method="post">
     {% csrf_token %}    
     {{ form.as_p }}
+
+    <p>
+        <label for="id_categoria_nome">Categoria:</label>
+        <!-- autocomplete -->
+        <input type="text" value="{{form.instance.categoria}}" 
+            class="form-control autocomplete" 
+            id="id_categoria_nome" 
+            data-url="{% url 'buscar_dados' 'home.Categoria' %}" 
+            data-hidden="#id_categoria" >
+    </p>
     
+
+
     <fieldset class="fieldset">
         <label for="imagem">Imagem:</label>
         <input type="hidden" 
@@ -16,33 +30,42 @@
             value="{{form.instance.img_base64}}" 
             name="img_base64">
 
+
         <input type="file" id="imagem" 
             name="imagem" 
             data-hidden="img_base64" 
             class="img_upload form-control" 
             accept="image/*"><br>
 
+
         <canvas class="canvas"  id="imageCanvas" width="200" height="200"></canvas><br>
 
+
     </fieldset>
+
 
     <p>
     
 </p>
 
-    <button class="btn btn-primary" type="submit">Salvar</button>
-    <button class="btn btn-secondary"  onclick="location.href='{% url 'produto' %}'">Voltar</button>
+
+    <button class="btn btn-primary btn-sm" type="submit">Salvar</button>
+    <a href="{% url 'produto' %}" class="btn btn-secondary btn-sm">Voltar</a>
+
+
 
 
     
 
+
 </form>
+
 
 {% endblock conteudo %}
 
+
 {% block javascript %}
 <script>
-
 
     $(document).ready(function() {
 
@@ -66,11 +89,13 @@
 
                 reader.onload = function() {
                     const imgBase64 = reader.result; // O resultado da conversão
+                   
                     $('#'+hidden).val(imgBase64); // Seta o valor base64 no campo hidden associado ao file input
                     var canvasTarget = $('#'+hidden).data('canvas'); // pega o canvas associado ao compo hidden
                     // Exibe a nova imagem no canvas
                     loadImage(imgBase64,canvasTarget);
                 };
+
 
                 reader.onerror = function(error) {
                     console.log('Erro ao converter a imagem: ', error);
@@ -79,5 +104,6 @@
         });
     });
 </script>
+
 
 {% endblock javascript %}

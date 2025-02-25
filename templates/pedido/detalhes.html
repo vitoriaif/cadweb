@@ -17,12 +17,14 @@
      <label for="id_produto_nome">Produto:</label>    
     <input type="text" class="form-control autocomplete" 
             id="id_produto_nome" 
+            data-url="{% url 'buscar_dados' 'home.Produto' %}" 
             value="{{item_pedido.produto.nome}}" 
             data-hidden="#id_produto" >
     </p>
     {{ form.as_p }}
     <button type="submit" class="btn btn-primary btn-sm">Salvar Produto</button>
     <a href="{% url 'form_pagamento' pedido.id %}" class="btn btn-primary btn-sm">Registrar Pagamento</a>
+    <a href="{% url 'notafiscal' pedido.id %}" class="btn btn-info btn-sm">Nota Fiscal</a>
 </form>
 
 <hr>

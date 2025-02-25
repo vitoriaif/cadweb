@@ -1,6 +1,8 @@
 import locale
 from django.db import models
 from decimal import Decimal
+import random
+
 
 
 class Categoria(models.Model):
@@ -48,15 +50,12 @@ class Estoque(models.Model):
     def __str__(self):
         return f'{self.produto.nome} - Quantidade: {self.qtde}'
 
-    
+   
 class Pedido(models.Model):
-
-
     NOVO = 1
     EM_ANDAMENTO = 2
     CONCLUIDO = 3
     CANCELADO = 4
-
 
     STATUS_CHOICES = [
         (NOVO, 'Novo'),
@@ -65,88 +64,135 @@ class Pedido(models.Model):
         (CANCELADO, 'Cancelado'),
     ]
 
-
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     produtos = models.ManyToManyField(Produto, through='ItemPedido')
     data_pedido = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=NOVO)
 
-
     def __str__(self):
-            return f"Pedido {self.id} - Cliente: {self.cliente.nome} - Status: {self.get_status_display()}"
+        return f"Pedido {self.id} - Cliente: {self.cliente.nome} - Status: {self.get_status_display()}"
 
     @property
     def data_pedidof(self):
-        """Retorna a data de nascimento no formato DD/MM/AAAA"""
         if self.data_pedido:
-            return self.data_pedido.strftime("%d/%m/%Y")
+            return self.data_pedido.strftime('%d/%m/%Y %H:%M')
         return None
-    
-    @property
+
+    @property 
     def total(self):
-        """Calcula o total de todos os itens no pedido, formatado como moeda local"""
+        """Retorna o total do pedido como Decimal"""
         total = sum(item.qtde * item.preco for item in self.itempedido_set.all())
-        return total
+        return Decimal(total)  
+
+    @property
+    def icms(self):
+        """ICMS: 18% sobre o total do pedido."""
+        return self.total * Decimal(0.18)
+
+    @property
+    def ipi(self):
+        """IPI: 5% sobre o total do pedido."""
+        return self.total * Decimal(0.05)
+
+    @property
+    def pis(self):
+        """PIS: 1.65% sobre o total do pedido."""
+        return self.total * Decimal(0.0165)
+
+    @property
+    def cofins(self):
+        """COFINS: 7.6% sobre o total do pedido."""
+        return self.total * Decimal(0.076)
+
+    @property
+    def impostos_totais(self):
+        """Soma de todos os impostos."""
+        return self.icms + self.ipi + self.pis + self.cofins
+
+    @property
+    def valor_final(self):
+        """Valor final do pedido considerando os impostos."""
+        return self.total + self.impostos_totais
 
     @property
     def qtdeItens(self):
-        """Conta a qtde de itens no pedido, """
         return self.itempedido_set.count()
-    
-    # lista de todos os pagamentos realiados
+
     @property
     def pagamentos(self):
-        return Pagamento.objects.filter(pedido=self) 
-    
-    #Calcula o total de todos os pagamentos do pedido
+        return Pagamento.objects.filter(pedido=self)
+
     @property
     def total_pago(self):
-        return sum(pagamento.valor for pagamento in self.pagamentos.all())
-           
+        total = sum(pagamento.valor for pagamento in self.pagamentos.all())
+        return Decimal(total)  
+
     @property
     def debito(self):
-        """Retorna o valor restante a ser pago no pedido."""
-        return self.total - self.total_pago
+        valor_debito = self.total - self.total_pago 
+        return Decimal(valor_debito)  
+
+    @property
+    def chave_acesso(self):
+        """Gera uma chave de acesso única baseada no ID do pedido e na data do pedido."""
+        if not self.data_pedido or not self.id:
+            return None
+        
+         # Data de emissão no formato YYYYMMDD
+        data_formatada = self.data_pedido.strftime('%Y%m%d')
+        
+        # ID do pedido com no mínimo 6 dígitos (ex: 000123)
+        id_pedido = str(self.id).zfill(6)
+        
+        # Gera números aleatórios para completar até 44 caracteres
+        restante = 44 - (len(data_formatada) + len(id_pedido))
+        numeros_aleatorios = ''.join(str(random.randint(0, 9)) for _ in range(restante))
+        
+        # Monta a chave numérica final
+        chave = f"{data_formatada}{id_pedido}{numeros_aleatorios}"
+        return chave
 
 class ItemPedido(models.Model):
-    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
-    produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
+    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)    
+    produto = models.ForeignKey(Produto, on_delete=models.CASCADE)  
     qtde = models.PositiveIntegerField()
     preco = models.DecimalField(max_digits=10, decimal_places=2)
 
-
     def __str__(self):
-        return f"{self.produto.nome} (Qtd: {self.qtde}) - Preço Unitário: {self.preco}" 
+        return f"{self.produto.nome} (Qtde: {self.qtde}) - Preço Unitário: {self.preco}"
     
     @property
-    def totalItem(self):
-        return self.qtde * self.preco # Calcula o total de cada item
-    
-    
-    
+    def calculoTotal(self):
+        """Calcula o total do item considerando a quantidade e o preço"""
+        total = self.qtde * self.preco
+        return Decimal(total)  # Certifique-se de que o total seja um Decimal
+
+
 class Pagamento(models.Model):
     DINHEIRO = 1
-    CARTAO = 2
-    PIX = 3
-    OUTRA = 4
-
+    CREDITO = 2
+    DEBITO = 3
+    PIX = 4
+    TICKET = 5
+    OUTRA = 6
 
     FORMA_CHOICES = [
         (DINHEIRO, 'Dinheiro'),
-        (CARTAO, 'Cartão'),
+        (CREDITO, 'Credito'),
+        (DEBITO, 'Debito'),
         (PIX, 'Pix'),
+        (TICKET, 'Ticket'),
         (OUTRA, 'Outra'),
     ]
 
-
-    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
+    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE) 
     forma = models.IntegerField(choices=FORMA_CHOICES)
-    valor = models.DecimalField(max_digits=10, decimal_places=2,blank=False)
+    valor = models.DecimalField(max_digits = 10, decimal_places=2, blank = False )
     data_pgto = models.DateTimeField(auto_now_add=True)
-    
+
     @property
     def data_pgtof(self):
-        """Retorna a data no formato DD/MM/AAAA HH:MM"""
+        """Retorna a data formatada: DD/MM/AAAA HH:MM"""
         if self.data_pgto:
             return self.data_pgto.strftime('%d/%m/%Y %H:%M')
         return None
